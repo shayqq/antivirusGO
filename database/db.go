@@ -84,18 +84,3 @@ func Save(object any) string {
 		return "Ошибка сервера"
 	}
 }
-
-func FindBy(flag string, data ...any) (bool, string) {
-	switch flag {
-	case "email":
-		var password string
-		query := `SELECT password FROM users WHERE email=$1`
-		err := DB.QueryRow(query, data[0]).Scan(&password)
-		if err == sql.ErrNoRows {
-			return false, ""
-		}
-		return true, password
-	default:
-		return false, ""
-	}
-}

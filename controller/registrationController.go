@@ -17,6 +17,7 @@ func RegisterRegistrationRoute(app *fiber.App) {
 }
 
 func registration(c fiber.Ctx) error {
+	var userService service.UserService = &impl.UserServiceImpl{}
 	var registrationRequest request.RegistrationRequest
 	body := c.Body()
 	err := json.Unmarshal(body, &registrationRequest)
@@ -36,7 +37,6 @@ func registration(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Неверный формат email!")
 	}
-	var userService service.UserService = &impl.UserServiceImpl{}
 	hashedPassword, err := userService.HashPassword(registrationRequest.Password)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Ошибка при хэшировании пароля")
@@ -44,7 +44,7 @@ func registration(c fiber.Ctx) error {
 	applicationUser := model.ApplicationUser{
 		Username: registrationRequest.Username,
 		Email:    registrationRequest.Email,
-		Password: string(hashedPassword),
+		Password: hashedPassword,
 		Role:     0,
 	}
 	result := database.Save(applicationUser)
@@ -54,5 +54,5 @@ func registration(c fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusInternalServerError).SendString(result)
 	}
-	return c.Status(fiber.StatusOK).SendString("Пользователь успешно создан!")
+	return c.Status(fiber.StatusOK).SendString("Регистрация успешна!")
 }

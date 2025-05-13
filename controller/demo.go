@@ -7,7 +7,7 @@ import (
 )
 
 func RegisterDemoRoutes(app *fiber.App) {
-	app.Get("/hello", hello, middleware.Protected)
+	app.Get("/hello", hello, middleware.Protected, middleware.HasRole(1))
 }
 
 func hello(c fiber.Ctx) error {

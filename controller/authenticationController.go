@@ -1,16 +1,14 @@
 package controller
 
 import (
-	"antivirus/database"
+	"antivirus/middleware"
+	"antivirus/repository"
 	"antivirus/request"
 	"antivirus/service"
 	"antivirus/service/impl"
 	"encoding/json"
-	"os"
-	"time"
 
 	"github.com/gofiber/fiber/v3"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func RegisterAuthenticationRoute(app *fiber.App) {
@@ -18,6 +16,7 @@ func RegisterAuthenticationRoute(app *fiber.App) {
 }
 
 func login(c fiber.Ctx) error {
+	var userService service.UserService = &impl.UserServiceImpl{}
 	var authenticationRequest request.AuthenticationRequest
 	body := c.Body()
 	err := json.Unmarshal(body, &authenticationRequest)
@@ -30,19 +29,14 @@ func login(c fiber.Ctx) error {
 	if authenticationRequest.Email == "" {
 		return c.Status(fiber.StatusBadRequest).SendString("Введите пароль!")
 	}
-	flag, password := database.FindBy("email", authenticationRequest.Email)
-	if !flag {
+	applicationUser := repository.FindByEmail(authenticationRequest.Email)
+	if applicationUser == nil {
 		return c.Status(fiber.StatusUnauthorized).SendString("Такого пользоателя не существует")
 	}
-	var userService service.UserService = &impl.UserServiceImpl{}
-	if !userService.Authenticate(password, authenticationRequest.Password) {
+	if !userService.Authenticate(applicationUser.Password, authenticationRequest.Password) {
 		return c.Status(fiber.StatusUnauthorized).SendString("Неверный пароль")
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": authenticationRequest.Email,
-		"exp": time.Now().Add(time.Hour * 72).Unix(),
-	})
-	tokenStr, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	tokenStr, err := middleware.GenerateToken(applicationUser.Role)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Ошибка генерации токена")
 	}
