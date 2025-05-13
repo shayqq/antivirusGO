@@ -4,11 +4,12 @@ import (
 	"antivirus/database"
 	"antivirus/model"
 	"antivirus/request"
+	"antivirus/service"
+	"antivirus/service/impl"
 	"encoding/json"
 	"net/mail"
 
 	"github.com/gofiber/fiber/v3"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func RegisterRegistrationRoute(app *fiber.App) {
@@ -35,7 +36,8 @@ func registration(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Неверный формат email!")
 	}
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registrationRequest.Password), bcrypt.DefaultCost)
+	var userService service.UserService = &impl.UserServiceImpl{}
+	hashedPassword, err := userService.HashPassword(registrationRequest.Password)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Ошибка при хэшировании пароля")
 	}

@@ -20,5 +20,6 @@ func main() {
 	app := fiber.New()
 	controller.RegisterDemoRoutes(app)
 	controller.RegisterRegistrationRoute(app)
+	controller.RegisterAuthenticationRoute(app)
 	log.Fatal(app.Listen(":8080"))
 }
