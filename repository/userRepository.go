@@ -16,3 +16,26 @@ func FindByEmail(postEmail string) *model.ApplicationUser {
 	}
 	return &applicationUser
 }
+
+func FindAll() ([]model.ApplicationUser, error) {
+	query := `SELECT username, email, role FROM users`
+	rows, err := database.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var users []model.ApplicationUser
+	for rows.Next() {
+		var user model.ApplicationUser
+		err := rows.Scan(&user.Username, &user.Email, &user.Role)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}

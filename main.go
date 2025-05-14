@@ -21,5 +21,6 @@ func main() {
 	controller.RegisterDemoRoutes(app)
 	controller.RegisterRegistrationRoute(app)
 	controller.RegisterAuthenticationRoute(app)
+	controller.RegisterUserRoutes(app)
 	log.Fatal(app.Listen(":8080"))
 }

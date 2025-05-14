@@ -1,6 +1,9 @@
 package impl
 
 import (
+	"antivirus/model"
+	"antivirus/repository"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -14,4 +17,8 @@ func (a *UserServiceImpl) HashPassword(password string) (string, error) {
 func (a *UserServiceImpl) Authenticate(hashedPassword string, plainPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
 	return err == nil
+}
+
+func (a *UserServiceImpl) GetAll() ([]model.ApplicationUser, error) {
+	return repository.FindAll()
 }

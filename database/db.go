@@ -20,7 +20,8 @@ func Connect() {
 	if err != nil {
 		log.Fatal(textcolor.RedErrorText("Не удалось открыть базу данных "), err)
 	}
-	_, err = db.Exec("CREATE DATABASE " + os.Getenv("DBNAME"))
+	query := "CREATE DATABASE " + os.Getenv("DBNAME")
+	_, err = db.Exec(query)
 	if err != nil {
 		if !strings.Contains(err.Error(), "already exists") {
 			log.Fatal(textcolor.RedErrorText("Что-то пошло не так "), err)
