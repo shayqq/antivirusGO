@@ -85,3 +85,31 @@ func Save(object any) string {
 		return "Ошибка сервера"
 	}
 }
+
+func Update(object any, flag any) string {
+	switch v := object.(type) {
+	case model.ApplicationUser:
+		query := `UPDATE users SET username=$1, email=$2, password=$3, role=$4 WHERE id=$5`
+		_, err := DB.Exec(query, v.Username, v.Email, v.Password, v.Role, flag)
+		if err != nil {
+			return "Ошибка сервера"
+		}
+		return ""
+	default:
+		return "Ошибка сервера"
+	}
+}
+
+func Delete(object any, flag any) string {
+	switch object.(type) {
+	case model.ApplicationUser:
+		query := `DELETE FROM users WHERE id=$1`
+		_, err := DB.Exec(query, flag)
+		if err != nil {
+			return "Ошибка сервера"
+		}
+		return ""
+	default:
+		return "Ошибка сервера"
+	}
+}

@@ -2,10 +2,11 @@ package controller
 
 import (
 	"antivirus/middleware"
-	"antivirus/repository"
+	"antivirus/repository/user"
 	"antivirus/request"
 	"antivirus/service"
 	"antivirus/service/impl"
+	"database/sql"
 	"encoding/json"
 
 	"github.com/gofiber/fiber/v3"
@@ -29,7 +30,10 @@ func login(c fiber.Ctx) error {
 	if authenticationRequest.Email == "" {
 		return c.Status(fiber.StatusBadRequest).SendString("Введите пароль!")
 	}
-	applicationUser := repository.FindByEmail(authenticationRequest.Email)
+	applicationUser, err := user.FindByEmail(authenticationRequest.Email)
+	if err != nil && err != sql.ErrNoRows {
+		return c.Status(fiber.StatusInternalServerError).SendString("Ошибка получения данных")
+	}
 	if applicationUser == nil {
 		return c.Status(fiber.StatusUnauthorized).SendString("Такого пользоателя не существует")
 	}

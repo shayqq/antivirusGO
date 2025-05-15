@@ -2,7 +2,7 @@ package impl
 
 import (
 	"antivirus/model"
-	"antivirus/repository"
+	"antivirus/repository/user"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -20,5 +20,5 @@ func (a *UserServiceImpl) Authenticate(hashedPassword string, plainPassword stri
 }
 
 func (a *UserServiceImpl) GetAll() ([]model.ApplicationUser, error) {
-	return repository.FindAll()
+	return user.FindAll()
 }

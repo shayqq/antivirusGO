@@ -18,7 +18,6 @@ func main() {
 	database.Connect()
 	defer database.DB.Close()
 	app := fiber.New()
-	controller.RegisterDemoRoutes(app)
 	controller.RegisterRegistrationRoute(app)
 	controller.RegisterAuthenticationRoute(app)
 	controller.RegisterUserRoutes(app)
